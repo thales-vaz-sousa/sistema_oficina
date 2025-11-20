@@ -13,7 +13,7 @@ Este projeto é um **sistema web** para gerenciamento de uma oficina mecânica, 
 
 Inclui **dashboard**, **relatórios**, suporte a **modelos 3D** para visualização e **PWA** (Progressive Web App) com cache offline via Service Worker.
 
----_
+---
 
 ## 🚀 Tecnologias Utilizadas
 
