@@ -113,15 +113,18 @@ venv\Scripts\activate   # Windows
 pip install -r requirements.txt
 ```
 
-### 3. Configurar Banco PostgreSQL
+### 3. Iniciar e Configurar Banco PostgreSQL
 
 ```bash
-# Criar banco
+# Na aplicação pgAdmin criar ou abrir banco
 dropdb sistema_oficina --if-exists
 createdb sistema_oficina
 
-# Executar script SQL
+# Na aplicação pgAdmin executar script SQL ou refazer banco com schemav1.sql
 psql -U postgres -d sistema_oficina -f backup.sql
+
+# Em config.py mudar o campo password
+password = "sua_senha_aqui"
 ```
 
 ### 4. Rodar aplicação
