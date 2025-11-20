@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% set banner_icon = "fas fa-concierge-bell" %}
+{% block content %}
+
+<div class="glass-card mb-4">
+    <h3 class="mb-1">Editar Serviço</h3>
+    <small class="text-muted">Atualize os dados do serviço</small>
+</div>
+
+<form method="POST" action="{{ url_for('servicos_editar', id=servico.id_servico) }}" class="glass-card">
+
+    <div class="mb-3">
+        <label class="form-label">Nome do Serviço</label>
+        <input name="nome_servico" class="form-control" required value="{{ servico.nome_servico }}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Descrição</label>
+        <textarea name="descricao" class="form-control">{{ servico.descricao }}</textarea>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Preço Base (R$)</label>
+            <input type="number" step="0.01" name="preco_base" class="form-control" required value="{{ servico.preco_base }}">
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Tempo Estimado (min)</label>
+            <input type="number" name="tempo_estimado" class="form-control" value="{{ servico.tempo_estimado }}">
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary btn-modern" type="submit">Atualizar</button>
+        <a href="{{ url_for('servicos_listar') }}" class="btn btn-secondary btn-modern">Cancelar</a>
+    </div>
+
+</form>
+
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% set banner_icon = "fas fa-clipboard-list" %}
+{% block content %}
+<div class="glass-card mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <model-viewer src="{{ url_for('static', filename='models_3d/order/scene.gltf') }}"
+                      alt="Modelo 3D da ordem de serviço"
+                      auto-rotate
+                      camera-controls
+                      style="width:300px; height:300px;">
+        </model-viewer>
+        <div>
+            <h2 class="mb-1 fw-bold text-dark">Ordens de Serviço</h2>
+            <small class="text-muted">Gerenciamento completo das OSs da oficina</small>
+        </div>
+        <a href="{{ url_for('ordens_criar') }}" class="btn btn-primary btn-modern">
+            <i class="fas fa-plus me-2"></i>Nova OS
+        </a>
+    </div>
+</div>
+
+<div class="glass-card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nº OS</th>
+                    <th>Status</th>
+                    <th>Veículo</th>
+                    <th>Mecânico</th>
+                    <th>Abertura</th>
+                    <th>Valor Total</th>
+                    <th style="width:180px;" class="text-center">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for os in ordens %}
+                <tr>
+                    <td>{{ os.numero_os }}</td>
+                    <td>
+  {%- set status_classes = {
+        'Pendente': 'bg-warning text-dark',
+        'Em Andamento': 'bg-info text-dark',
+        'Concluída': 'bg-success',
+        'Concluida': 'bg-success',
+        'Finalizada': 'bg-success',
+        'Cancelada': 'bg-danger'
+      } -%}
+  {%- set cls = status_classes.get(os.status, 'bg-secondary') -%}
+  <span class="badge {{ cls }}">{{ os.status }}</span>
+</td>
+                    <td>{{ os.veiculo.placa }} - {{ os.veiculo.modelo }}</td>
+                    <td>{{ os.mecanico.nome }}</td>
+                    <td>{{ os.data_abertura }}</td>
+                    <td>{% if os.valor_total %}R$ {{ "%.2f"|format(os.valor_total) }}{% else %}<span class="text-muted">A calcular</span>{% endif %}</td>
+                    <td class="text-center">
+                        <div class="btn-group btn-group-sm">
+                            <a href="{{ url_for('ordens_editar', id=os.id_ordem_servico) }}" class="btn btn-outline-primary"><i class="fas fa-edit"></i></a>
+                            <a href="{{ url_for('ordens_excluir', id=os.id_ordem_servico) }}" class="btn btn-outline-danger" onclick="return confirmarExclusao('Excluir esta OS?')"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted">Nenhuma OS registrada.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

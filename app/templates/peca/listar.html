@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% set banner_icon = "fas fa-cog" %}
+{% block content %}
+<div class="glass-card mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <model-viewer src="{{ url_for('static', filename='models_3d/engine/engine.glb') }}"
+                      alt="Modelo 3D da peça"
+                      auto-rotate
+                      camera-controls
+                      style="width:300px; height:300px;">
+        </model-viewer>
+        <div>
+            <h2 class="mb-1 fw-bold text-dark">Peças</h2>
+            <small class="text-muted">Estoque de peças e componentes</small>
+        </div>
+        <a href="{{ url_for('pecas_criar') }}" class="btn btn-primary btn-modern">
+            <i class="fas fa-plus me-2"></i>Nova Peça
+        </a>
+    </div>
+</div>
+
+<div class="glass-card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Preço Venda (R$)</th>
+                    <th>Estoque Atual</th>
+                    <th>Estoque Mínimo</th>
+                    <th style="width:180px;" class="text-center">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in pecas %}
+                <tr>
+                    <td>{{ p.nome_peca }}</td>
+                    <td>{{ p.descricao or "-" }}</td>
+                    <td>R$ {{ "%.2f"|format(p.preco_venda) }}</td>
+                    <td>{{ p.estoque_atual }}</td>
+                    <td>{{ p.estoque_minimo or "-" }}</td>
+                    <td class="text-center">
+                        <div class="btn-group btn-group-sm">
+                            <a href="{{ url_for('pecas_editar', id=p.id_peca) }}" class="btn btn-outline-primary"><i class="fas fa-edit"></i></a>
+                            <a href="{{ url_for('pecas_excluir', id=p.id_peca) }}" class="btn btn-outline-danger" onclick="return confirmarExclusao('Excluir peça?')"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">Nenhuma peça cadastrada no estoque.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

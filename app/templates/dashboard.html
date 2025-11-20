@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% block page_title %}Dashboard Oficina{% endblock %}
+{% block page_subtitle %}Visão geral do sistema{% endblock %}
+
+{% block content %}
+
+<div class="stats-grid">
+    {% macro stat(icon, value, label, color_class) -%}
+    <div class="stat-card fade-in">
+        <div class="stat-icon {{ color_class }}">
+            <i class="{{ icon }}"></i>
+        </div>
+        <div class="stat-value">{{ value or 0 }}</div>
+        <div class="stat-label">{{ label }}</div>
+    </div>
+    {%- endmacro %}
+
+    {{ stat('fas fa-users', clientes, 'Clientes', 'primary') }}
+    {{ stat('fas fa-car', veiculos, 'Veículos', 'success') }}
+    {{ stat('fas fa-tools', mecanicos, 'Mecânicos', 'warning') }}
+    {{ stat('fas fa-concierge-bell', servicos, 'Serviços', 'info') }}
+    {{ stat('fas fa-cog', pecas, 'Peças', 'primary') }}
+    {{ stat('fas fa-clipboard-list', ordens, 'Ordens', 'success') }}
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+    <div class="lg:col-span-2">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-chart-bar me-2"></i>Resumo do Sistema</h3>
+                <p class="card-subtitle">Visão geral das atividades</p>
+            </div>
+            <div class="card-body">
+                <div class="alert info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Relatórios e gráficos irão aparecer aqui.
+                </div>
+
+                <!-- Gráficos -->
+                <div class="charts-grid">
+                    <div class="chart-item">
+                        <h5>Ordens por mês</h5>
+                        <canvas id="chartOrdens" width="400" height="160"></canvas>
+                    </div>
+                    <div class="chart-item">
+                        <h5>Agendamentos por mês</h5>
+                        <canvas id="chartAgend" width="400" height="160"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="space-y-6">
+        <!-- Próximos Agendamentos e Ordens em Andamento (mantidos) -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-calendar-alt me-2"></i>Próximos Agendamentos</h3>
+            </div>
+            <div class="card-body">
+                {% if proximos_agendamentos %}
+                    {% for agendamento in proximos_agendamentos %}
+                    <div class="border-l-4 border-primary pl-3 mb-4 last:mb-0">
+                        <div class="text-sm text-muted">{{ agendamento.data_agendamento }} — {{ agendamento.hora_agendamento }}</div>
+                        <div class="font-semibold">{{ agendamento.veiculo.placa }}</div>
+                        <div class="text-sm">
+                            {% if agendamento.veiculo and agendamento.veiculo.cliente %}
+                                {{ agendamento.veiculo.cliente.nome }}
+                            {% else %}
+                                Cliente não informado
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-times"></i>
+                        <p>Nenhum agendamento próximo</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-wrench me-2"></i>Ordens em Andamento</h3>
+            </div>
+            <div class="card-body">
+                {% if ordens_andamento %}
+                    {% for ordem in ordens_andamento %}
+                    <div class="border-l-4 border-warning pl-3 mb-4 last:mb-0">
+                        <div class="text-sm font-semibold">{{ ordem.numero_os }}</div>
+                        <div class="text-sm">{{ ordem.veiculo.placa }}</div>
+                        <div class="text-sm text-muted">
+                            {% if ordem.mecanico %}
+                                {{ ordem.mecanico.nome }} • 
+                            {% endif %}
+                            {{ ordem.status }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-check"></i>
+                        <p>Nenhuma ordem em andamento</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- scripts do Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const months = {{ months_labels|tojson }};
+const ordersData = {{ orders_series|tojson }};
+const agendData = {{ agend_series|tojson }};
+
+// DEBUG: verifique no console do navegador
+console.log('months', months);
+console.log('orders', ordersData);
+console.log('agend', agendData);
+
+function alphaColor(rgba, a){
+    // converte 'rgba(r,g,b,x)' -> 'rgba(r,g,b,a)'
+    return String(rgba).replace(/,\s*[\d.]+\s*\)$/, ',' + a + ')');
+}
+
+function buildLineChart(ctx, labels, data, label, color){
+    const bg = alphaColor(color, 0.15);
+    const maxVal = data.length ? Math.max(...data) : 1;
+    return new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: label,
+                data: data,
+                borderColor: color,
+                backgroundColor: bg,
+                fill: true,
+                tension: 0.2,
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1, precision: 0 },
+                    suggestedMax: Math.max(3, maxVal + 1)
+                }
+            }
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const ctxOrd = document.getElementById('chartOrdens').getContext('2d');
+    const ctxAg = document.getElementById('chartAgend').getContext('2d');
+
+    buildLineChart(ctxOrd, months, ordersData, 'Ordens', 'rgba(54,162,235,1)');
+    buildLineChart(ctxAg, months, agendData, 'Agendamentos', 'rgba(255,159,64,1)');
+});
+</script>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-bolt me-2"></i>Ações Rápidas</h3>
+        <p class="card-subtitle">Acesso rápido às funções principais</p>
+    </div>
+    <div class="card-body">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <a href="{{ url_for('clientes_criar') }}" class="btn btn-secondary btn-block">
+                <i class="fas fa-user-plus me-2"></i>Cliente
+            </a>
+            <a href="{{ url_for('veiculos_criar') }}" class="btn btn-secondary btn-block">
+                <i class="fas fa-car me-2"></i>Veículo
+            </a>
+            <a href="{{ url_for('ordens_criar') }}" class="btn btn-secondary btn-block">
+                <i class="fas fa-clipboard-list me-2"></i>Ordem
+            </a>
+            <a href="{{ url_for('servicos_listar') }}" class="btn btn-secondary btn-block">
+                <i class="fas fa-concierge-bell me-2"></i>Serviços
+            </a>
+            <a href="{{ url_for('pecas_listar') }}" class="btn btn-secondary btn-block">
+                <i class="fas fa-cog me-2"></i>Peças
+            </a>
+            <a href="{{ url_for('agendamentos_listar') }}" class="btn btn-secondary btn-block">
+                <i class="fas fa-calendar-alt me-2"></i>Agendamentos
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

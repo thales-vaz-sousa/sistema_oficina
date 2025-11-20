@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title or "Sistema Oficina Premium" }}</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Customizado -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="brand">
+                    <div class="brand-logo">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <span>Oficina Premium</span>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-item">
+                    <a href="{{ url_for('home') }}" class="nav-link {% if request.endpoint == 'home' %}active{% endif %}">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+                
+                <div class="nav-item">
+                    <a href="{{ url_for('clientes_listar') }}" class="nav-link {% if 'clientes' in request.endpoint %}active{% endif %}">
+                        <i class="fas fa-users"></i>
+                        <span>Clientes</span>
+                    </a>
+                </div>
+                
+                <div class="nav-item">
+                    <a href="{{ url_for('veiculos_listar') }}" class="nav-link {% if 'veiculos' in request.endpoint %}active{% endif %}">
+                        <i class="fas fa-car"></i>
+                        <span>Veículos</span>
+                    </a>
+                </div>
+                
+                <div class="nav-item">
+                    <a href="{{ url_for('mecanicos_listar') }}" class="nav-link {% if 'mecanicos' in request.endpoint %}active{% endif %}">
+                        <i class="fas fa-tools"></i>
+                        <span>Mecânicos</span>
+                    </a>
+                </div>
+                
+                <div class="nav-item">
+                    <a href="{{ url_for('servicos_listar') }}" class="nav-link {% if 'servicos' in request.endpoint %}active{% endif %}">
+                        <i class="fas fa-concierge-bell"></i>
+                        <span>Serviços</span>
+                    </a>
+                </div>
+                
+                <div class="nav-item">
+                    <a href="{{ url_for('pecas_listar') }}" class="nav-link {% if 'pecas' in request.endpoint %}active{% endif %}">
+                        <i class="fas fa-cog"></i>
+                        <span>Peças</span>
+                    </a>
+                </div>
+                
+                <div class="nav-item">
+                    <a href="{{ url_for('agendamentos_listar') }}" class="nav-link {% if 'agendamentos' in request.endpoint %}active{% endif %}">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Agendamentos</span>
+                    </a>
+                </div>
+                
+                <div class="nav-item">
+                    <a href="{{ url_for('ordens_listar') }}" class="nav-link {% if 'ordens' in request.endpoint %}active{% endif %}">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>Ordens de Serviço</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="topbar-content">
+                    <div class="page-title">
+                        <h1>{% block page_title %}{{ title or "Sistema Oficina" }}{% endblock %}</h1>
+                        <p>{% block page_subtitle %}Gerencie sua oficina de forma eficiente{% endblock %}</p>
+                    </div>
+                    
+                    <div class="topbar-actions">
+                        <div class="d-flex align-center gap-3">
+                            <span class="text-muted">{{ now.strftime('%d/%m/%Y %H:%M') if now else '' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Conteúdo -->
+            <div class="content-container">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }} fade-in">
+                                <div class="d-flex justify-between align-center">
+                                    <span>{{ message }}</span>
+                                    <button type="button" class="btn btn-sm" onclick="this.parentElement.parentElement.remove()">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Scripts Customizados -->
+    <script>
+        // Animações suaves
+        document.addEventListener('DOMContentLoaded', function() {
+            // Adiciona classe de animação aos elementos
+            const cards = document.querySelectorAll('.card, .stat-card');
+            cards.forEach((card, index) => {
+                card.style.animation = `fadeIn 0.5s ease ${index * 0.1}s both`;
+            });
+        });
+
+        // Confirmação para exclusões
+        function confirmarExclusao(mensagem = 'Tem certeza que deseja excluir?') {
+            return confirm(mensagem);
+        }
+
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        }
+    </script>
+
+    <!-- model-viewer lib -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+    <script>
+      // register service worker (works on http://localhost and https)
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          .then(() => console.log('Service Worker registrado: modelos 3D serão pré-cacheados'))
+          .catch(err => console.warn('SW registration failed:', err));
+      }
+    </script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% set banner_icon = "fas fa-tools" %}
+{% block content %}
+<div class="glass-card mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <model-viewer src="{{ url_for('static', filename='models_3d/worker/worker.glb') }}"
+                      alt="Modelo 3D do mecânico"
+                      auto-rotate
+                      camera-controls
+                      style="width:300px; height:300px;">
+        </model-viewer>
+        <div>
+            <h2 class="mb-1 fw-bold text-dark">Mecânicos</h2>
+            <small class="text-muted">Equipe técnica da oficina</small>
+        </div>
+        <a href="{{ url_for('mecanicos_criar') }}" class="btn btn-primary btn-modern">
+            <i class="fas fa-plus me-2"></i>Novo Mecânico
+        </a>
+    </div>
+</div>
+
+<div class="glass-card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nome</th>
+                    <th>CPF</th>
+                    <th>Telefone</th>
+                    <th>Especialidade</th>
+                    <th>Admissão</th>
+                    <th style="width:180px;" class="text-center">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in mecanicos %}
+                <tr>
+                    <td>{{ m.nome }}</td>
+                    <td>{{ m.cpf }}</td>
+                    <td>{{ m.telefone }}</td>
+                    <td>{{ m.especialidade or "-" }}</td>
+                    <td>{{ m.data_admissao }}</td>
+                    <td class="text-center">
+                        <div class="btn-group btn-group-sm">
+                            <a href="{{ url_for('mecanicos_editar', id=m.id_mecanico) }}" class="btn btn-outline-primary"><i class="fas fa-edit"></i></a>
+                            <a href="{{ url_for('mecanicos_excluir', id=m.id_mecanico) }}" class="btn btn-outline-danger" onclick="return confirmarExclusao('Excluir mecânico?')"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">Nenhum mecânico cadastrado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

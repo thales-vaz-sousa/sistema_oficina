@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% set banner_icon = "fas fa-users" %}
+{% block content %}
+<div class="glass-card mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <model-viewer src="{{ url_for('static', filename='models_3d/user/scene.gltf') }}"
+                      alt="Modelo 3D do cliente"
+                      auto-rotate
+                      camera-controls
+                      style="width:300px; height:300px;">
+        </model-viewer>
+        <div>
+            <h2 class="mb-1 fw-bold text-dark">Clientes</h2>
+            <small class="text-muted">Gerencie seus clientes cadastrados</small>
+        </div>
+        <a href="{{ url_for('clientes_criar') }}" class="btn btn-primary btn-modern">
+            <i class="fas fa-plus me-2"></i>Novo Cliente
+        </a>
+    </div>
+</div>
+
+<div class="glass-card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>Nome</th>
+          <th>CPF</th>
+          <th>Telefone</th>
+          <th>Email</th>
+          <th>Endereço</th>
+          <th style="width:180px;" class="text-center">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in clientes %}
+        <tr>
+          <td>{{ c.nome }}</td>
+          <td>{{ c.cpf }}</td>
+          <td>{{ c.telefone }}</td>
+          <td>{{ c.email }}</td>
+          <td style="max-width:300px; word-wrap:break-word;">{{ c.endereco }}</td>
+          <td class="text-center">
+            <div class="btn-group btn-group-sm">
+              <a class="btn btn-outline-primary" href="{{ url_for('clientes_editar', id=c.id_cliente) }}"><i class="fas fa-edit"></i></a>
+              <a class="btn btn-outline-danger" href="{{ url_for('clientes_excluir', id=c.id_cliente) }}" onclick="return confirmarExclusao('Confirma exclusão do cliente?')"><i class="fas fa-trash"></i></a>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" class="text-center text-muted">Nenhum cliente cadastrado.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

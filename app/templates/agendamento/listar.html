@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% set banner_icon = "fas fa-calendar-alt" %}
+{% block content %}
+<div class="glass-card mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <model-viewer src="{{ url_for('static', filename='models_3d/crane/crane.glb') }}"
+                      alt="Modelo 3D do agendamento"
+                      auto-rotate
+                      camera-controls
+                      style="width: 300px; height: 300px;">
+        </model-viewer>
+        <div>
+            <h2 class="mb-1 fw-bold text-dark">Agendamentos</h2>
+            <small class="text-muted">Agendamentos de serviços na oficina</small>
+        </div>
+        <a href="{{ url_for('agendamentos_criar') }}" class="btn btn-primary btn-modern">
+            <i class="fas fa-plus me-2"></i>Novo Agendamento
+        </a>
+    </div>
+</div>
+
+<div class="glass-card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Data</th>
+                    <th>Hora</th>
+                    <th>Veículo</th>
+                    <th>Mecânico</th>
+                    <th>Status</th>
+                    <th style="width:180px;" class="text-center">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in agendamentos %}
+                <tr>
+                    <td>{{ a.data_agendamento }}</td>
+                    <td>{{ a.hora_agendamento }}</td>
+                    <td>{{ a.veiculo.placa }} - {{ a.veiculo.modelo }}</td>
+                    <td>{{ a.mecanico.nome }}</td>
+                    <td>
+                        <span class="badge bg-{{ 'success' if a.status == 'Confirmado' else 'warning' if a.status == 'Pendente' else 'danger' }}">
+                            {{ a.status }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <div class="btn-group btn-group-sm">
+                            <a href="{{ url_for('agendamentos_editar', id=a.id_agendamento) }}" class="btn btn-outline-primary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{{ url_for('agendamentos_excluir', id=a.id_agendamento) }}" class="btn btn-outline-danger" onclick="return confirmarExclusao('Excluir agendamento?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">Nenhum agendamento cadastrado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+{% set banner_icon = "fas fa-clipboard-list" %}
+{% block content %}
+
+<div class="glass-card mb-4">
+    <h3 class="mb-1">Nova Ordem de Serviço</h3>
+    <small class="text-muted">Cadastre uma nova OS com serviços e peças</small>
+</div>
+
+<form method="POST" action="{{ url_for('ordens_criar') }}" class="glass-card" id="formOS">
+
+    <!-- DADOS BÁSICOS -->
+    <h5 class="mb-3">Dados da OS</h5>
+
+    <div class="row">
+
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Número da OS</label>
+            <input name="numero_os" class="form-control" required placeholder="Ex.: OS-2025-010">
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Data de Abertura</label>
+            <input type="datetime-local" name="data_abertura" class="form-control" required>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-control" required>
+                <option value="Aberta">Aberta</option>
+                <option value="Em Andamento">Em Andamento</option>
+                <option value="Concluída">Concluída</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- VINCULAÇÃO -->
+    <h5 class="mb-3 mt-4">Vinculações</h5>
+
+    <div class="row">
+
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Agendamento (opcional)</label>
+            <select name="id_agendamento" class="form-control">
+                <option value="">Nenhum</option>
+                {% for a in agendamentos %}
+                <option value="{{ a.id_agendamento }}">
+                    {{ a.data_agendamento }} - {{ a.hora_agendamento }} ({{ a.veiculo.placa }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Veículo</label>
+            <select name="id_veiculo" class="form-control" required>
+                {% for v in veiculos %}
+                <option value="{{ v.id_veiculo }}">{{ v.placa }} - {{ v.modelo }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="form-label">Mecânico Responsável</label>
+            <select name="id_mecanico" class="form-control" required>
+                {% for m in mecanicos %}
+                <option value="{{ m.id_mecanico }}">{{ m.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+    </div>
+
+    <!-- SERVIÇOS -->
+    <h5 class="mt-4">Serviços Realizados</h5>
+
+    <table class="table" id="tbServicos">
+        <thead>
+            <tr>
+                <th>Serviço</th>
+                <th>Qtd</th>
+                <th>Preço</th>
+                <th>Total</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <button type="button" class="btn btn-outline-primary mb-3" onclick="addServico()">+ Adicionar Serviço</button>
+
+    <!-- PEÇAS -->
+    <h5 class="mt-4">Peças Utilizadas</h5>
+
+    <table class="table" id="tbPecas">
+        <thead>
+            <tr>
+                <th>Peça</th>
+                <th>Qtd</th>
+                <th>Preço</th>
+                <th>Total</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <button type="button" class="btn btn-outline-primary mb-3" onclick="addPeca()">+ Adicionar Peça</button>
+
+    <!-- VALOR TOTAL -->
+    <div class="glass-card mt-4 p-3">
+        <h4 class="mb-0">Valor Total: R$ <span id="valorTotal">0.00</span></h4>
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+        <button class="btn btn-primary btn-modern" type="submit">Salvar OS</button>
+        <a href="{{ url_for('ordens_listar') }}" class="btn btn-secondary btn-modern">Cancelar</a>
+    </div>
+
+</form>
+
+<!-- JAVASCRIPT PARA MULTIPLOS SERVIÇOS/PEÇAS -->
+<script>
+/* Mapas de preços (números garantidos) */
+let servicosData = {
+    {% for s in servicos %}
+    "{{ s.id_servico }}": {{ ("%.2f"|format(s.preco_base)).replace(',', '.') }}{% if not loop.last %},{% endif %}
+    {% endfor %}
+};
+
+let pecasData = {
+    {% for p in pecas %}
+    "{{ p.id_peca }}": {{ ("%.2f"|format(p.preco_venda)).replace(',', '.') }}{% if not loop.last %},{% endif %}
+    {% endfor %}
+};
+
+function parseNumber(val){
+    if (val === null || val === undefined) return 0;
+    val = String(val).trim().replace(',', '.');
+    let n = parseFloat(val);
+    return isNaN(n) ? 0 : n;
+}
+
+function addServico() {
+    let tbody = document.querySelector("#tbServicos tbody");
+    let tr = document.createElement("tr");
+
+    tr.innerHTML = `
+        <td>
+            <select name="servicos_ids[]" class="form-control" onchange="updateServicoRow(this)">
+                <option value="">Selecione...</option>
+                {% for s in servicos %}
+                <option value="{{ s.id_servico }}">{{ s.nome_servico }}</option>
+                {% endfor %}
+            </select>
+        </td>
+        <td><input type="number" name="servicos_qtd[]" class="form-control" min="1" value="1" onchange="updateServicoRow(this)"></td>
+        <td><input type="text" class="form-control" name="servicos_preco[]" readonly></td>
+        <td><input type="text" class="form-control" name="servicos_total[]" readonly></td>
+        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button></td>
+    `;
+
+    tbody.appendChild(tr);
+}
+
+function addPeca() {
+    let tbody = document.querySelector("#tbPecas tbody");
+    let tr = document.createElement("tr");
+
+    tr.innerHTML = `
+        <td>
+            <select name="pecas_ids[]" class="form-control" onchange="updatePecaRow(this)">
+                <option value="">Selecione...</option>
+                {% for p in pecas %}
+                <option value="{{ p.id_peca }}">{{ p.nome_peca }}</option>
+                {% endfor %}
+            </select>
+        </td>
+        <td><input type="number" name="pecas_qtd[]" class="form-control" min="1" value="1" onchange="updatePecaRow(this)"></td>
+        <td><input type="text" class="form-control" name="pecas_preco[]" readonly></td>
+        <td><input type="text" class="form-control" name="pecas_total[]" readonly></td>
+        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button></td>
+    `;
+
+    tbody.appendChild(tr);
+}
+
+function updateServicoRow(el) {
+    const tr = el.closest("tr");
+    const select = tr.querySelector("[name='servicos_ids[]']");
+    const qtdInput = tr.querySelector("[name='servicos_qtd[]']");
+    const precoInput = tr.querySelector("[name='servicos_preco[]']");
+    const totalInput = tr.querySelector("[name='servicos_total[]']");
+
+    const id = select ? select.value : "";
+    let qtd = parseInt(qtdInput ? qtdInput.value : 1, 10);
+    if (isNaN(qtd) || qtd < 1) { qtd = 1; if (qtdInput) qtdInput.value = 1; }
+
+    if (!id) {
+        if (precoInput) precoInput.value = "";
+        if (totalInput) totalInput.value = "";
+        updateTotal();
+        return;
+    }
+
+    const preco = parseNumber(servicosData[id]);
+    const total = preco * qtd;
+
+    if (precoInput) precoInput.value = preco.toFixed(2);
+    if (totalInput) totalInput.value = total.toFixed(2);
+
+    updateTotal();
+}
+
+function updatePecaRow(el) {
+    const tr = el.closest("tr");
+    const select = tr.querySelector("[name='pecas_ids[]']");
+    const qtdInput = tr.querySelector("[name='pecas_qtd[]']");
+    const precoInput = tr.querySelector("[name='pecas_preco[]']");
+    const totalInput = tr.querySelector("[name='pecas_total[]']");
+
+    const id = select ? select.value : "";
+    let qtd = parseInt(qtdInput ? qtdInput.value : 1, 10);
+    if (isNaN(qtd) || qtd < 1) { qtd = 1; if (qtdInput) qtdInput.value = 1; }
+
+    if (!id) {
+        if (precoInput) precoInput.value = "";
+        if (totalInput) totalInput.value = "";
+        updateTotal();
+        return;
+    }
+
+    const preco = parseNumber(pecasData[id]);
+    const total = preco * qtd;
+
+    if (precoInput) precoInput.value = preco.toFixed(2);
+    if (totalInput) totalInput.value = total.toFixed(2);
+
+    updateTotal();
+}
+
+function removeRow(btn) {
+    const tr = btn.closest("tr");
+    if (tr) tr.remove();
+    updateTotal();
+}
+
+function updateTotal() {
+    let total = 0;
+
+    document.querySelectorAll("[name='servicos_total[]']").forEach(t => {
+        total += parseNumber(t.value);
+    });
+
+    document.querySelectorAll("[name='pecas_total[]']").forEach(t => {
+        total += parseNumber(t.value);
+    });
+
+    const el = document.getElementById("valorTotal");
+    if (el) el.innerText = total.toFixed(2);
+}
+
+/* Inicialização segura ao carregar a página */
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("[name='servicos_ids[]']").forEach(s => {
+        if (s.value) updateServicoRow(s);
+    });
+    document.querySelectorAll("[name='pecas_ids[]']").forEach(p => {
+        if (p.value) updatePecaRow(p);
+    });
+    updateTotal();
+});
+</script>
+
+{% endblock %}
