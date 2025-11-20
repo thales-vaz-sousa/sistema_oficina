@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-# Criar a instância do SQLAlchemy
 db = SQLAlchemy()
 
 def create_app():

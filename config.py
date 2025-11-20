@@ -4,8 +4,8 @@ from urllib.parse import quote_plus
 class Config:
     SECRET_KEY = 'chave-secreta-muito-segura-aqui'
     
-    # CORREÇÃO: Codificar a senha
-    password = "TVS@2001"
+    # CORREÇÃO: altere a senha do banco de dados conforme necessário
+    password = "sua_senha_aqui"
     encoded_password = quote_plus(password)
     
     SQLALCHEMY_DATABASE_URI = os.getenv(
@@ -14,4 +14,4 @@ class Config:
     )
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ECHO = True  # Para debug - veja as queries no console
+    SQLALCHEMY_ECHO = True 

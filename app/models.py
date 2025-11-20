@@ -119,3 +119,4 @@ class PecaOrdemServico(db.Model):
 
     ordem = db.relationship("OrdemDeServico", back_populates="pecas_os")
     peca = db.relationship("Peca", back_populates="pecas_os")
+    

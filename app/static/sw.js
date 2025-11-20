@@ -43,6 +43,6 @@ self.addEventListener('fetch', event => {
       );
     }
   } catch (e) {
-    // ignore non-HTTP requests
+    // ignore non-HTTP requests.
   }
 });

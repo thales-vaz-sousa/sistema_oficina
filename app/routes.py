@@ -5,8 +5,9 @@ from datetime import datetime
 from sqlalchemy.orm import joinedload
 from sqlalchemy import cast, Date, extract
 
-# Na sua função home/dashboard
-
+#================================
+# ROTAS DA APLICAÇÃO
+#================================
 
 def init_app(app):
 
@@ -132,7 +133,10 @@ def init_app(app):
                                     proximos_agendamentos=[], ordens_andamento=[],
                                     months_labels=[], orders_series=[], agend_series=[])
 
+    #================================
     # CLIENTES
+    #================================
+
     @app.route('/clientes')
     def clientes_listar():
         clientes = Cliente.query.order_by(Cliente.nome).all()
@@ -204,12 +208,14 @@ def init_app(app):
         
         return redirect(url_for('clientes_listar'))
 
+    #================================
     # VEÍCULOS
+    #================================
+
     @app.route('/veiculos')
     def veiculos_listar():
         veiculos = Veiculo.query.order_by(Veiculo.placa).all()
         return render_template('veiculo/listar.html', veiculos=veiculos)
-
 
     @app.route('/veiculos/criar', methods=['GET', 'POST'])
     def veiculos_criar():
@@ -277,7 +283,10 @@ def init_app(app):
         
         return redirect(url_for('veiculos_listar'))
 
+    #================================
     # MECÂNICOS
+    #================================
+
     @app.route('/mecanicos')
     def mecanicos_listar():
         with app.app_context():
@@ -348,7 +357,10 @@ def init_app(app):
         
         return redirect(url_for('mecanicos_listar'))
 
+    #================================
     # SERVIÇOS
+    #================================
+
     @app.route('/servicos')
     def servicos_listar():
         with app.app_context():
@@ -415,7 +427,10 @@ def init_app(app):
         
         return redirect(url_for('servicos_listar'))
 
+    #================================
     # PEÇAS
+    #================================
+
     @app.route('/pecas')
     def pecas_listar():
         # lista sempre atualizada direto do DB
@@ -490,7 +505,10 @@ def init_app(app):
         
         return redirect(url_for('pecas_listar'))
 
+    #================================
     # AGENDAMENTOS
+    #================================
+
     @app.route('/agendamentos')
     def agendamentos_listar():
         agendamentos = Agendamento.query.order_by(Agendamento.data_agendamento.desc(), Agendamento.hora_agendamento.desc()).all()
@@ -575,7 +593,10 @@ def init_app(app):
         
         return redirect(url_for('agendamentos_listar'))
 
+    #================================
     # ORDENS DE SERVIÇO
+    #================================
+
     @app.route('/ordens')
     def ordens_listar():
         with app.app_context():
@@ -766,6 +787,10 @@ def init_app(app):
             flash(f"Erro ao excluir ordem de serviço: {str(e)}", "danger")
         
         return redirect(url_for('ordens_listar'))
+
+    #================================
+    # RELATÓRIOS
+    #================================
 
     @app.route('/relatorios')
     def relatorios():
