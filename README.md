@@ -120,7 +120,7 @@ pip install -r requirements.txt
 dropdb sistema_oficina --if-exists
 createdb sistema_oficina
 
-# Executar script SQL ou refazer banco com schemav1.sql
+# Na aplicação pgAdmin executar script SQL ou refazer banco com schemav1.sql
 psql -U postgres -d sistema_oficina -f backup.sql
 
 # Em config.py mudar o campo password
