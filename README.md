@@ -29,68 +29,58 @@ Inclui **dashboard**, **relatórios**, suporte a **modelos 3D** para visualizaç
 ## 📂 Estrutura do Projeto
 
 ```
-models_3d/
-│   ├── order/
-│   │   ├── textures/
-│   │   ├── license.txt
-│   │   ├── scene.bin
-│   │   ├── scene.gltf
-│   ├── user/
-│   │   ├── textures/
-│   │   ├── license.txt
-│   │   ├── scene.bin
-│   │   ├── scene.gltf
-│   ├── worker/
-│   │   ├── textures/
-│   │   ├── license.txt
-│   │   ├── scene.bin
-│   │   ├── scene.gltf
-│   ├── wrench/
-│       ├── textures/
-│       ├── license.txt
-│       ├── scene.bin
-│       ├── scene.gltf
-
-templates/
-│   ├── agendamento/
-│   │   ├── criar.html
-│   │   ├── editar.html
-│   │   ├── listar.html
-│   ├── cliente/
-│   │   ├── criar.html
-│   │   ├── editar.html
-│   │   ├── listar.html
-│   ├── mecanico/
-│   │   ├── criar.html
-│   │   ├── editar.html
-│   │   ├── listar.html
-│   ├── ordem_de_servico/
-│   │   ├── criar.html
-│   │   ├── editar.html
-│   │   ├── listar.html
-│   ├── peca/
-│   │   ├── criar.html
-│   │   ├── editar.html
-│   │   ├── listar.html
-│   ├── servico/
-│   │   ├── criar.html
-│   │   ├── editar.html
-│   │   ├── listar.html
-│   ├── veiculo/
-│       ├── base.html
-│       ├── dashboard.html
-│       ├── relatorios.html
-
 app/
-│   ├── __init__.py
-│   ├── models.py
-│   ├── routes.py
-
+  |   ├──static/
+  |   |    ├─ css/
+  |   |    |     ├── style.css
+  |   |    ├─ models_3d/
+  |   |    |     ├── order/
+  |   |    |     │   ├── scene.gltf
+  |   |    |     ├── user/
+  |   |    |     │   ├── scene.gltf
+  |   |    |     ├── worker/
+  |   |    |     │   ├── scene.gltf
+  |   |    |     ├── wrench/
+  |   |    |     |   ├── scene.gltf
+  |   ├─ templates/
+  |   │   ├── agendamento/
+  |   │   │   ├── criar.html
+  |   │   │   ├── editar.html
+  |   │   │   ├── listar.html
+  |   │   ├── cliente/
+  |   │   │   ├── criar.html
+  |   │   │   ├── editar.html
+  |   │   │   ├── listar.html
+  |   │   ├── mecanico/
+  |   |   │   │   ├── criar.html
+  |   |   │   │   ├── editar.html
+  |   |   │   │   ├── listar.html
+  |   │   ├── ordem_de_servico/
+  |   |   │   │   ├── criar.html
+  |   |   │   │   ├── editar.html
+  |   |   │   │   ├── listar.html
+  |   │   ├── peca/
+  |   |   │   │   ├── criar.html
+  |   |   │   │   ├── editar.html
+  |   |   │   │   ├── listar.html
+  |   │   ├── servico/
+  |   │   │   ├── criar.html
+  |   |   │   ├── editar.html
+  |   |   │   ├── listar.html
+  |   │   ├── veiculo/
+  |   │   │   ├── criar.html
+  |   |   │   ├── editar.html
+  |   |   │   ├── listar.html
+  |   │   ├── base.html
+  |   │   ├── dashboard.html
+  |   │   ├── relatorios.html
+  │   ├── __init__.py
+  │   ├── models.py
+  │   ├── routes.py
 config.py
 requirements.txt
 run.py
-sw.js
-Documentos/
+documents/
 ```
 
 ---
