@@ -1,14 +1,13 @@
 // ...new file...
 const CACHE_NAME = 'models-v1';
 const MODEL_URLS = [
-  '/static/models_3d/car/scene.gltf',
+  '/static/models_3d/car/car.glb',
   '/static/models_3d/wrench/scene.gltf',
   '/static/models_3d/user/scene.gltf',
   '/static/models_3d/order/scene.gltf',
-  '/static/models_3d/engine/scene.gltf',
-  '/static/models_3d/dashboard/scene.gltf',
-  '/static/models_3d/crane/scene.gltf',
-  '/static/models_3d/worker/scene.gltf'
+  '/static/models_3d/engine/engine.glb',
+  '/static/models_3d/crane/crane.glb',
+  '/static/models_3d/worker/worker.glb'
 ];
 
 // precache models on install

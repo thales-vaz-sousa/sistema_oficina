@@ -5,7 +5,7 @@ class Config:
     SECRET_KEY = 'chave-secreta-muito-segura-aqui'
     
     # CORREÇÃO: altere a senha do banco de dados conforme necessário
-    password = "sua_senha_aqui"
+    password = "TVS@2001"
     encoded_password = quote_plus(password)
     
     SQLALCHEMY_DATABASE_URI = os.getenv(
