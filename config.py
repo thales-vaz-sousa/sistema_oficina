@@ -10,4 +10,3 @@ class Config:
         f"postgresql://postgres:{encoded_password}@localhost:5432/sistema_oficina"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ECHO = os.getenv('SQLALCHEMY_ECHO', 'False') == 'True'
