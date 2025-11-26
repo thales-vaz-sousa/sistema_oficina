@@ -16,8 +16,5 @@ def create_app():
     with app.app_context():
         from app import routes
         routes.init_app(app)
-        
-        # Não criar tabelas (já existem no banco)
-        # db.create_all()  # COMENTE ESTA LINHA!
-    
+
     return app
