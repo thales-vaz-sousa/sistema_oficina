@@ -22,7 +22,7 @@ Inclui **dashboard**, **relatórios**, suporte a **modelos 3D** para visualizaç
 - **Frontend**: HTML5, CSS3, JavaScript
 - **Extras**:
   - Service Worker para PWA
-  - Modelos 3D (GLTF + BIN)
+  - Modelos 3D (GLTF + BIN) aha
 
 ---
 
